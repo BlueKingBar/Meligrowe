@@ -83,7 +83,7 @@ function drawMenu()
 			rom.ImGui.Separator()
 
 			rom.ImGui.TextWrapped("Starting Voice Pitch")
-			value, used = rom.ImGui.SliderFloat("Pitch Difference##startPitch", config.startingPitch, -2.0, 2.0, "%.1f")
+			value, used = rom.ImGui.SliderFloat("Pitch Difference##startPitch", config.startingPitch, -7.0, 7.0, "%.1f")
 			if used then
 				config.startingPitch = value
 				config.voicePitchChangePerRoom = (config.finalPitch - config.startingPitch) / 40
@@ -91,7 +91,7 @@ function drawMenu()
 			end
 
 			rom.ImGui.TextWrapped("Approximate Final Voice Pitch")
-			value, used = rom.ImGui.SliderFloat("Pitch Difference##endPitch", config.finalPitch, -2.0, 2.0, "%.1f")
+			value, used = rom.ImGui.SliderFloat("Pitch Difference##endPitch", config.finalPitch, -7.0, 7.0, "%.1f")
 			if used then
 				config.finalPitch = value
 				config.voicePitchChangePerRoom = (config.finalPitch - config.startingPitch) / 40
@@ -141,7 +141,7 @@ function drawMenu()
 
 			if config.healthModeUseStartingHP == false then
 				rom.ImGui.TextWrapped("Normal Size At")
-				value, used = rom.ImGui.SliderInt("HP##startSizeHP", config.healthModeNormalSizeHP, 30, 110)
+				value, used = rom.ImGui.InputInt("HP##startSizeHP", config.healthModeNormalSizeHP, 1, 1000)
 				if used then
 					config.healthModeNormalSizeHP = value
 					GrowTraitUpdate()
@@ -174,7 +174,7 @@ function drawMenu()
 			rom.ImGui.Separator()
 
 			rom.ImGui.TextWrapped("Voice Pitch at 400 HP:")
-			value, used = rom.ImGui.SliderFloat("Pitch Difference##endPitchHP", config.healthModeBigPitch, -2.0, 2.0, "%.1f")
+			value, used = rom.ImGui.SliderFloat("Pitch Difference##endPitchHP", config.healthModeBigPitch, -7.0, 7.0, "%.1f")
 			if used then
 				config.healthModeBigPitch = value
 				GrowTraitUpdate()
@@ -193,8 +193,13 @@ function drawMenu()
 		end
 
 		if config.sizeUseLowerLimit == true then
+            local sliderCap = 3.5
+			if config.dangerousSizesAllowed then
+				sliderCap = 10.0
+			end
+
 			rom.ImGui.TextWrapped("Lower Size Limit:")
-			value, used = rom.ImGui.SliderFloat("Times Normal Size##lowerSizeCap", config.sizeLowerLimit, 0.1, 1.0, "%.1f")
+			value, used = rom.ImGui.SliderFloat("Times Normal Size##lowerSizeCap", config.sizeLowerLimit, 0.1, sliderCap, "%.1f")
 			if used then
 				config.sizeLowerLimit = value
 				GrowTraitUpdate()
@@ -213,7 +218,7 @@ function drawMenu()
 			end
 
 			rom.ImGui.TextWrapped("Upper Size Limit:")
-			value, used = rom.ImGui.SliderFloat("Times Normal Size##upperSizeCap", config.sizeUpperLimit, 1.0, sliderCap, "%.1f")
+			value, used = rom.ImGui.SliderFloat("Times Normal Size##upperSizeCap", config.sizeUpperLimit, 0.1, sliderCap, "%.1f")
 			if used then
 				config.sizeUpperLimit = value
 				GrowTraitUpdate()
@@ -229,7 +234,7 @@ function drawMenu()
 
 		if config.voicePitchUseLowerLimit == true then
 			rom.ImGui.TextWrapped("Lower Pitch Limit:")
-			value, used = rom.ImGui.SliderFloat("Pitch Difference##lowerPitchCap", config.voicePitchLowerLimit, -2.0, 0, "%.1f")
+			value, used = rom.ImGui.SliderFloat("Pitch Difference##lowerPitchCap", config.voicePitchLowerLimit, -7.0, 7.0, "%.1f")
 			if used then
 				config.voicePitchLowerLimit = value
 				GrowTraitUpdate()
@@ -243,7 +248,7 @@ function drawMenu()
 
 		if config.voicePitchUseUpperLimit == true then
 			rom.ImGui.TextWrapped("Upper Pitch Limit:")
-			value, used = rom.ImGui.SliderFloat("Pitch Difference##upperPitchCap", config.voicePitchUpperLimit, 0, 2.0, "%.1f")
+			value, used = rom.ImGui.SliderFloat("Pitch Difference##upperPitchCap", config.voicePitchUpperLimit, -7.0, 7.0, "%.1f")
 			if used then
 				config.voicePitchUpperLimit = value
 				GrowTraitUpdate()
