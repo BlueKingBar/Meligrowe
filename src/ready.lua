@@ -8,8 +8,8 @@
 -- 	so you will most likely want to have it reference
 --	values and functions later defined in `reload.lua`.
 
-OnAnyLoad {
-	function (triggerArgs)
+OnAnyLoad({
+	function(triggerArgs)
 		local mapName = triggerArgs.name
 		local roomData = RoomData[mapName]
 		local hubRoomData = HubRoomData[mapName]
@@ -17,8 +17,8 @@ OnAnyLoad {
 		--load sound banks used in runs in the hub area
 		thread(loadGrowVoiceBanks, mapName, hubRoomData)
 		thread(GrowModActivate, mapName, roomData, hubRoomData)
-	end
-}
+	end,
+})
 
 function loadGrowVoiceBanks(m, h)
 	if h ~= nil or m == GameData.HubMapName then
@@ -28,8 +28,14 @@ end
 
 function GrowModActivate(m, r, h)
 	if m == GameData.HubMapName or h ~= nil or r ~= nil then
-		if CurrentRun ~= nil and CurrentRun.Hero ~= nil and not HeroHasTrait("GrowTrait") and not HeroHasTrait("HealthGrowTrait") and not HeroHasTrait("HubGrowTrait") then
-			AddGrowTraitToHero({init = true})
+		if
+			CurrentRun ~= nil
+			and CurrentRun.Hero ~= nil
+			and not HeroHasTrait("GrowTrait")
+			and not HeroHasTrait("HealthGrowTrait")
+			and not HeroHasTrait("HubGrowTrait")
+		then
+			AddGrowTraitToHero({ init = true })
 		end
 	end
 end
@@ -42,7 +48,7 @@ modutil.mod.Path.Wrap("StartNewRun", function(base, prevRun, args)
 	if prevRun == nil then --fix for crash on new save files
 		skipUICheck = true
 	end
-	AddGrowTraitToHero({skipUI = skipUICheck, init = true, preserveSize = keepSizeCheck})
+	AddGrowTraitToHero({ skipUI = skipUICheck, init = true, preserveSize = keepSizeCheck })
 	return retVar
 end)
 
@@ -50,7 +56,7 @@ end)
 --this originally was StartDeathLoop, but this gets called from it, ensuring it's executed before it waits for user inputs
 modutil.mod.Path.Wrap("StartDeathLoopPresentation", function(base, currentRun)
 	local keepSizeCheck = config.keepSizeInHub
-	AddGrowTraitToHero({init = true, preserveSize = keepSizeCheck, useRunEndSize = true})
+	AddGrowTraitToHero({ init = true, preserveSize = keepSizeCheck, useRunEndSize = true })
 
 	base(currentRun)
 end)
@@ -69,7 +75,6 @@ modutil.mod.Path.Wrap("ApplyTraitSetupFunctions", function(base, unit, args)
 	if not args or (args and not args.Context) then
 		GrowTraitUpdate()
 	end
-
 end)
 
 --ticks down boon for per encounter growth
@@ -123,7 +128,9 @@ modutil.mod.Path.Wrap("ValidateMaxHealth", function(base, blockDelta)
 	if config.growthMode == "Max HP" and HeroHasTrait("HealthGrowTrait") and hasChanged then
 		local dP = true
 
-		if CurrentHubRoom ~= nil then local dP = false end
+		if CurrentHubRoom ~= nil then
+			local dP = false
+		end
 		GrowHero({ doPresentation = dP })
 	end
 end)
@@ -142,7 +149,7 @@ end)
 
 --overrides dialogue screen behavior to scale melinoe's portrait
 modutil.mod.Path.Wrap("DisplayTextLine", function(base, screen, source, line, parentLine, nextLine, args)
-	DisplayTextLine_wrap( screen, source, line, parentLine, nextLine, args )
+	DisplayTextLine_wrap(screen, source, line, parentLine, nextLine, args)
 end)
 
 --Makes preserving size into run work properly with Max HP scaling. Nabs the final size value a little early.

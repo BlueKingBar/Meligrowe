@@ -2,10 +2,10 @@
 
 --insert trait description
 local order = {
-	'Id',
-	'InheritFrom',
-	'DisplayName',
-	'Description',
+	"Id",
+	"InheritFrom",
+	"DisplayName",
+	"Description",
 }
 
 local text_to_insert = sjson.to_object({
@@ -29,10 +29,10 @@ local text_to_insert3 = sjson.to_object({
 	Description = "{#UpgradeFormat}{$TooltipData.ExtractData.CurrentMelSize:P} {#Prev}size. Press insert to set size control and other settings!",
 }, order)
 
-local textfile = rom.path.combine(rom.paths.Content, 'Game/Text/en/TraitText.en.sjson')
+local textfile = rom.path.combine(rom.paths.Content, "Game/Text/en/TraitText.en.sjson")
 
 sjson.hook(textfile, function(sjsonData)
----@diagnostic disable-next-line: param-type-mismatch
+	---@diagnostic disable-next-line: param-type-mismatch
 	table.insert(sjsonData.Texts, text_to_insert)
 	---@diagnostic disable-next-line: param-type-mismatch
 	table.insert(sjsonData.Texts, text_to_insert2)
@@ -42,8 +42,8 @@ end)
 
 --insert pop-up text for growth
 local orderPopUp = {
-	'Id',
-	'DisplayName',
+	"Id",
+	"DisplayName",
 }
 
 local text_to_insert_pop_up = sjson.to_object({
@@ -66,12 +66,12 @@ local text_to_insert_pop_up4 = sjson.to_object({
 	DisplayName = "Unstuck off!",
 }, orderPopUp)
 
-local textfilePopUp = rom.path.combine(rom.paths.Content, 'Game/Text/en/HelpText.en.sjson')
+local textfilePopUp = rom.path.combine(rom.paths.Content, "Game/Text/en/HelpText.en.sjson")
 
 sjson.hook(textfilePopUp, function(sjsonData)
----@diagnostic disable-next-line: param-type-mismatch
+	---@diagnostic disable-next-line: param-type-mismatch
 	table.insert(sjsonData.Texts, text_to_insert_pop_up)
----@diagnostic disable-next-line: param-type-mismatch
+	---@diagnostic disable-next-line: param-type-mismatch
 	table.insert(sjsonData.Texts, text_to_insert_pop_up2)
 	---@diagnostic disable-next-line: param-type-mismatch
 	table.insert(sjsonData.Texts, text_to_insert_pop_up3)
@@ -82,14 +82,14 @@ end)
 --insert cancelable version of special surface damage animation
 
 local orderAnim = {
-	'Name',
-	'InheritFrom',
-	'GrannyAnimation',
-	'GrannyAnimationSpeed',
-	'CancelOnOwnerMove',
-	'TimeModifierFraction',
-	'ChainTo',
-	'Frames',
+	"Name",
+	"InheritFrom",
+	"GrannyAnimation",
+	"GrannyAnimationSpeed",
+	"CancelOnOwnerMove",
+	"TimeModifierFraction",
+	"ChainTo",
+	"Frames",
 }
 
 local anim_to_insert = {
@@ -100,8 +100,7 @@ local anim_to_insert = {
 	CancelOnOwnerMove = true, --changed!
 	TimeModifierFraction = 1.00,
 	ChainTo = "MelinoeIdleWeaponless",
-	Frames =
-	{
+	Frames = {
 		{
 			Frame = 0,
 			FrameSpeed = 0.0,
@@ -113,51 +112,74 @@ local anim_to_insert = {
 	},
 }
 
-local textfileAnim = rom.path.combine(rom.paths.Content, 'Game/Animations/Model/Hero_Melinoe_Animation_HitReacts.sjson')
+local textfileAnim = rom.path.combine(rom.paths.Content, "Game/Animations/Model/Hero_Melinoe_Animation_HitReacts.sjson")
 
 sjson.hook(textfileAnim, function(sjsonData)
----@diagnostic disable-next-line: param-type-mismatch
+	---@diagnostic disable-next-line: param-type-mismatch
 	table.insert(sjsonData.Animations, anim_to_insert)
 end)
 
 --custom voice line sets for changing size
-GlobalVoiceLines.GrowBiggerVoiceLines =
-{
+GlobalVoiceLines.GrowBiggerVoiceLines = {
 	{
 		--Uses same requirements as picking up a boon.
-		GameStateRequirements =
-		{
+		GameStateRequirements = {
 			{
 				Path = { "CurrentRun", "CurrentRoom", "Encounter", "Name" },
-				IsNone = { "Shop", "DevotionTestF", "DevotionTestG", "DevotionTestH", "DevotionTestN", "DevotionTestO", "DevotionTestP", "ArtemisCombatIntro",
-					"ArtemisCombatF", "ArtemisCombatF2",
-					"ArtemisCombatG", "ArtemisCombatG2",
-					"ArtemisCombatN", "ArtemisCombatN2",
-					"HeraclesCombatN", "HeraclesCombatN2",
-					"HeraclesCombatO", "HeraclesCombatO2",
-					"HeraclesCombatP", "HeraclesCombatP2",
-					"NemesisCombatF", "NemesisCombatG",
-					"NemesisCombatH", "IcarusCombatO",
-					"IcarusCombatO2", "IcarusCombatP",
-					"IcarusCombatP2", },
+				IsNone = {
+					"Shop",
+					"DevotionTestF",
+					"DevotionTestG",
+					"DevotionTestH",
+					"DevotionTestN",
+					"DevotionTestO",
+					"DevotionTestP",
+					"ArtemisCombatIntro",
+					"ArtemisCombatF",
+					"ArtemisCombatF2",
+					"ArtemisCombatG",
+					"ArtemisCombatG2",
+					"ArtemisCombatN",
+					"ArtemisCombatN2",
+					"HeraclesCombatN",
+					"HeraclesCombatN2",
+					"HeraclesCombatO",
+					"HeraclesCombatO2",
+					"HeraclesCombatP",
+					"HeraclesCombatP2",
+					"NemesisCombatF",
+					"NemesisCombatG",
+					"NemesisCombatH",
+					"IcarusCombatO",
+					"IcarusCombatO2",
+					"IcarusCombatP",
+					"IcarusCombatP2",
+				},
 			},
 			{
 				Path = { "CurrentRun", "CurrentRoom", "Name" },
-				IsNone = { "TestAllThings", "F_Story01", "G_Story01", "H_Bridge01", "I_Story01", "N_Story01", "O_Story01", "P_Story01" },
+				IsNone = {
+					"TestAllThings",
+					"F_Story01",
+					"G_Story01",
+					"H_Bridge01",
+					"I_Story01",
+					"N_Story01",
+					"O_Story01",
+					"P_Story01",
+				},
 			},
 		},
 		{
-			GameStateRequirements =
-			{
+			GameStateRequirements = {
 				{
 					Path = { "CurrentRun", "Hero", "trackedScaleDiff" },
 					Comparison = ">",
 					Value = 0,
-				}
+				},
 			},
 			{
-				GameStateRequirements =
-				{
+				GameStateRequirements = {
 					{
 						Path = { "CurrentRun", "Hero", "trackedScale" },
 						Comparison = ">=",
@@ -179,11 +201,11 @@ GlobalVoiceLines.GrowBiggerVoiceLines =
 				TriggerCooldowns = { "MelinoeAnyQuipSpeech", "MelCombatResolvedSpeech", Time = 3 },
 				TriggerCooldownsImmediately = true,
 
-				{ Cue = "/VO/Melinoe_3526", Text = "I'm huge..." , PlayFirst = true },
+				{ Cue = "/VO/Melinoe_3526", Text = "I'm huge...", PlayFirst = true },
 				{ Cue = "/VO/MelinoeField_2054", Text = "I'm Titan-sized..." },
 				{ Cue = "/VO/Melinoe_2597", Text = "How tall you've grown..." },
 				{ Cue = "/VO/Melinoe_2598", Text = "You're a sight to behold." },
-				{ Cue = "/VO/Melinoe_1410", Text = "How do I look?"},
+				{ Cue = "/VO/Melinoe_1410", Text = "How do I look?" },
 				{ Cue = "/VO/Melinoe_0350", Text = "{#Emph}<Laugh>" },
 				{ Cue = "/VO/Melinoe_0351", Text = "{#Emph}<Laugh>" },
 				{ Cue = "/VO/MelinoeField_2052", Text = "What have I done..." },
@@ -192,7 +214,7 @@ GlobalVoiceLines.GrowBiggerVoiceLines =
 				{ Cue = "/VO/Melinoe_3594", Text = "Well look at you!" },
 			},
 			{
-				
+
 				--Queue = "Interrupt",
 				BreakIfPlayed = true,
 				RandomRemaining = true,
@@ -218,7 +240,7 @@ GlobalVoiceLines.GrowBiggerVoiceLines =
 				{ Cue = "/VO/MelinoeField_1895", Text = "That's potent..." },
 				{ Cue = "/VO/MelinoeField_1896", Text = "{#Emph}Ooh..." },
 				{ Cue = "/VO/MelinoeField_2050", Text = "Am I...? Oh." },
-				{ Cue = "/VO/MelinoeField_2051", Text = "I feel a little off...", PlayFirst = true},
+				{ Cue = "/VO/MelinoeField_2051", Text = "I feel a little off...", PlayFirst = true },
 				{ Cue = "/VO/MelinoeField_1897", Text = "Felt that for sure..." },
 				{ Cue = "/VO/Melinoe_1512", Text = "{#Emph}Ah-haha{#Prev}, wow..." },
 				{ Cue = "/VO/Melinoe_1510", Text = "That's a feeling there..." },
@@ -237,17 +259,15 @@ GlobalVoiceLines.GrowBiggerVoiceLines =
 			},
 		},
 		{
-			GameStateRequirements =
-			{
+			GameStateRequirements = {
 				{
 					Path = { "CurrentRun", "Hero", "trackedScaleDiff" },
 					Comparison = "<",
 					Value = 0,
-				}
+				},
 			},
 			{
-				GameStateRequirements =
-				{
+				GameStateRequirements = {
 					{
 						Path = { "CurrentRun", "Hero", "trackedScale" },
 						Comparison = "<=",
@@ -271,13 +291,13 @@ GlobalVoiceLines.GrowBiggerVoiceLines =
 
 				{ Cue = "/VO/MelinoeField_2053", Text = "Everything looks so big...", PlayFirst = true },
 				{ Cue = "/VO/Melinoe_2598", Text = "You're a sight to behold." },
-				{ Cue = "/VO/Melinoe_1410", Text = "How do I look?"},
+				{ Cue = "/VO/Melinoe_1410", Text = "How do I look?" },
 				{ Cue = "/VO/Melinoe_0350", Text = "{#Emph}<Laugh>" },
 				{ Cue = "/VO/Melinoe_0351", Text = "{#Emph}<Laugh>" },
 				{ Cue = "/VO/MelinoeField_2052", Text = "What have I done..." },
 			},
 			{
-				
+
 				--Queue = "Interrupt",
 				BreakIfPlayed = true,
 				RandomRemaining = true,
@@ -298,7 +318,7 @@ GlobalVoiceLines.GrowBiggerVoiceLines =
 				{ Cue = "/VO/MelinoeField_1895", Text = "That's potent..." },
 				{ Cue = "/VO/MelinoeField_1896", Text = "{#Emph}Ooh..." },
 				{ Cue = "/VO/MelinoeField_2050", Text = "Am I...? Oh." },
-				{ Cue = "/VO/MelinoeField_2051", Text = "I feel a little off...", PlayFirst = true},
+				{ Cue = "/VO/MelinoeField_2051", Text = "I feel a little off...", PlayFirst = true },
 				{ Cue = "/VO/MelinoeField_1897", Text = "Felt that for sure..." },
 				{ Cue = "/VO/Melinoe_1512", Text = "{#Emph}Ah-haha{#Prev}, wow..." },
 				{ Cue = "/VO/Melinoe_1510", Text = "That's a feeling there..." },
@@ -321,36 +341,34 @@ GlobalVoiceLines.GrowBiggerVoiceLines =
 
 -- the trait itself
 GrowTraits = {
-	GrowTrait = 
-	{
+	GrowTrait = {
 		Name = "GrowTrait",
 		Icon = "Boon_Circe_02",
 		BaseChipmunkValue = config.startingPitch,
 		GrowTraitValue = config.startingSize or 1,
 		DamageValue = 1.0,
 		MaxHealthMultiplier = 1.0,
-		AddOutgoingDamageModifiers =
-		{
+		AddOutgoingDamageModifiers = {
 			UseTraitValue = "DamageValue",
 			IsMultiplier = true,
 		},
 		--Per Encounter Data
-		GrowTraitGrowthPerRoomDisplay = { BaseValue = (config.sizeGrowthPerRoom or 0.0225) * (config.growEveryXRooms or 2), DecimalPlaces = 4 },
+		GrowTraitGrowthPerRoomDisplay = {
+			BaseValue = (config.sizeGrowthPerRoom or 0.0225) * (config.growEveryXRooms or 2),
+			DecimalPlaces = 4,
+		},
 		GrowLevel = 0,
 		--important UI/per room interaction stuff
 		Hidden = config.hideBoon or false,
 		ShowInHUD = true,
 		CurrentRoom = 0,
-		RoomsPerUpgrade = 
-		{ 
+		RoomsPerUpgrade = {
 			Amount = { BaseValue = config.growEveryXRooms or 2 },
-			ReportValues =
-			{ 
+			ReportValues = {
 				ReportedRoomsPerUpgrade = "Amount",
 			},
 		},
-		ExtractValues = 
-		{
+		ExtractValues = {
 			{
 				Key = "GrowTraitGrowthPerRoomDisplay",
 				ExtractAs = "MelSizeIncreasePerXRooms",
@@ -370,22 +388,19 @@ GrowTraits = {
 			},
 		},
 	},
-	HealthGrowTrait = 
-	{
+	HealthGrowTrait = {
 		Name = "HealthGrowTrait",
 		Icon = "Boon_Circe_02",
 		BaseChipmunkValue = config.startingPitch,
 		GrowTraitValue = config.startingSize or 1,
 		DamageValue = 1.0,
-		AddOutgoingDamageModifiers =
-		{
+		AddOutgoingDamageModifiers = {
 			UseTraitValue = "DamageValue",
 			IsMultiplier = true,
 		},
 		--important UI stuff
 		Hidden = config.hideBoon or false,
-		ExtractValues = 
-		{
+		ExtractValues = {
 			{
 				SkipAutoExtract = true,
 				Key = "GrowTraitValue",
@@ -395,24 +410,21 @@ GrowTraits = {
 			},
 		},
 	},
-	HubGrowTrait = 
-	{
+	HubGrowTrait = {
 		Name = "HubGrowTrait",
 		Icon = "Boon_Circe_02",
 		BaseChipmunkValue = 0,
 		GrowTraitValue = 1,
 		DamageValue = 1.0,
 		MaxHealthMultiplier = 1.0,
-		AddOutgoingDamageModifiers =
-		{
+		AddOutgoingDamageModifiers = {
 			UseTraitValue = "DamageValue",
 			IsMultiplier = true,
 		},
 		GrowLevel = 0,
 		--important UI stuff
 		Hidden = config.hideBoon or false,
-		ExtractValues = 
-		{
+		ExtractValues = {
 			{
 				SkipAutoExtract = true,
 				Key = "GrowTraitValue",
@@ -425,7 +437,6 @@ GrowTraits = {
 }
 
 local spicyLine = { Cue = "/VO/Melinoe_1526", Text = "{#Emph}Whew {#Prev}that's hot..." }
-
 
 if config.spicy == true then
 	table.insert(GlobalVoiceLines.GrowBiggerVoiceLines[1][1][2], spicyLine)

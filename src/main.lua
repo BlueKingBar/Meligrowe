@@ -7,7 +7,7 @@
 local mods = rom.mods
 
 ---@module 'SGG_Modding-ENVY-auto'
-mods['SGG_Modding-ENVY'].auto()
+mods["SGG_Modding-ENVY"].auto()
 -- ^ this gives us `public` and `import`, among others
 --	and makes all globals we define private to this plugin.
 ---@diagnostic disable: lowercase-global
@@ -24,36 +24,40 @@ game = rom.game
 import_as_fallback(game)
 
 ---@module 'SGG_Modding-SJSON'
-sjson = mods['SGG_Modding-SJSON']
+sjson = mods["SGG_Modding-SJSON"]
 ---@module 'SGG_Modding-ModUtil'
-modutil = mods['SGG_Modding-ModUtil']
+modutil = mods["SGG_Modding-ModUtil"]
 
 ---@module 'SGG_Modding-Chalk'
 chalk = mods["SGG_Modding-Chalk"]
 ---@module 'SGG_Modding-ReLoad'
-reload = mods['SGG_Modding-ReLoad']
+reload = mods["SGG_Modding-ReLoad"]
 
 ---@module 'config'
-config = chalk.auto 'config.lua'
+config = chalk.auto("config.lua")
 -- ^ this updates our `.cfg` file in the config folder!
 public.config = config -- so other mods can access our config
 
 local function on_ready()
 	-- what to do when we are ready, but not re-do on reload.
-	if config.enabled == false then return end
-	import 'Data/TraitData_Grow.lua'
-	import 'ready.lua'
+	if config.enabled == false then
+		return
+	end
+	import("Data/TraitData_Grow.lua")
+	import("ready.lua")
 end
 
 local function on_reload()
 	-- what to do when we are ready, but also again on every reload.
 	-- only do things that are safe to run over and over.
-	if config.enabled == false then return end
-	import 'reload.lua'
-	import 'binds.lua'
-	import 'imgui.lua'
-	import 'BiomeMapPresentation_wrap.lua'
-	import 'DisplayTextLine_wrap.lua'
+	if config.enabled == false then
+		return
+	end
+	import("reload.lua")
+	import("binds.lua")
+	import("imgui.lua")
+	import("BiomeMapPresentation_wrap.lua")
+	import("DisplayTextLine_wrap.lua")
 	setBinds()
 end
 

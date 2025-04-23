@@ -11,50 +11,61 @@ GrowUnstuck = GrowUnstuck or false --lock size to 1.0 toggle
 --table print debug function
 function dump(o, i)
 	local count = i or 0
-	local t = ''
+	local t = ""
 	if count > 0 then
-		for _=1,count do
-			t = t..'\t'
+		for _ = 1, count do
+			t = t .. "\t"
 		end
 	end
 
-	if type(o) == 'table' then
-	   local s = '\n' .. t .. '{ \n'
-	   for k,v in pairs(o) do
-		  if type(k) ~= 'number' then k = '"'..k..'"' end
-		  s = s .. t .. '['..k..'] = ' .. dump(v, count + 1)
-	   end
-	   return s .. t .. '},\n'
+	if type(o) == "table" then
+		local s = "\n" .. t .. "{ \n"
+		for k, v in pairs(o) do
+			if type(k) ~= "number" then
+				k = '"' .. k .. '"'
+			end
+			s = s .. t .. "[" .. k .. "] = " .. dump(v, count + 1)
+		end
+		return s .. t .. "},\n"
 	else
-	   return tostring(o) .. ',\n'
+		return tostring(o) .. ",\n"
 	end
 end
 
 --helps reset trait ticker mid-run (for CheckChamberTraits logic)
 --runs if boon is added/switched mid-run, or per X rooms is changed mid-run
 function setRoomGrowTraitHelper(level, divisor, trait)
-	if level == nil or divisor == nil then return end
+	if level == nil or divisor == nil then
+		return
+	end
 
-    trait.CurrentRoom = level - math.floor(level / divisor) * divisor
+	trait.CurrentRoom = level - math.floor(level / divisor) * divisor
 	trait.RoomsPerUpgrade.Amount = divisor
 	trait.GrowTraitGrowthPerRoomDisplay = (config.growEveryXRooms or 2) * (config.sizeGrowthPerRoom or 0.0225)
 
-	TraitUIUpdateText( trait )
+	TraitUIUpdateText(trait)
+end
+
+-- Gets the relevant trait from the hero, helper function to reduce code duplication
+function getGrowTrait()
+	mode = "room"
+	if HeroHasTrait("GrowTrait") then
+		trait = GetHeroTrait("GrowTrait")
+	elseif HeroHasTrait("HealthGrowTrait") then
+		trait = GetHeroTrait("HealthGrowTrait")
+		mode = "hp"
+	elseif HeroHasTrait("HubGrowTrait") then
+		trait = GetHeroTrait("HubGrowTrait")
+		mode = "hub"
+	end
+	return trait, mode
 end
 
 function updateGrowDamage()
 	local damage = 1.0
-	local trait = nil
+	local trait = getGrowTrait()
 
 	if CurrentRun and CurrentRun.Hero then
-		if HeroHasTrait("GrowTrait") then
-			trait = GetHeroTrait("GrowTrait")
-		elseif HeroHasTrait("HealthGrowTrait") then
-			trait = GetHeroTrait("HealthGrowTrait")
-		elseif HeroHasTrait("HubGrowTrait") then
-			trait = GetHeroTrait("HubGrowTrait")
-		end
-
 		if trait then
 			if config.statEnableDamage then
 				damage = trait.GrowTraitValue or 1.0
@@ -68,24 +79,15 @@ end
 
 function updateGrowHealth()
 	local health = 1.0
-	local trait = nil
+	local trait = getGrowTrait()
 
-	if CurrentRun and CurrentRun.Hero then
-		--Does not apply to max health scaling!
-		if HeroHasTrait("GrowTrait") then
-			trait = GetHeroTrait("GrowTrait")
-		elseif HeroHasTrait("HubGrowTrait") then
-			trait = GetHeroTrait("HubGrowTrait")
+	if trait then
+		if config.statEnableHealth then
+			health = trait.GrowTraitValue or 1.0
+			health = math.max(health, 0.1)
 		end
 
-		if trait then
-			if config.statEnableHealth then
-				health = trait.GrowTraitValue or 1.0
-				health = math.max(health, 0.1)
-			end
-
-			trait.MaxHealthMultiplier = health
-		end
+		trait.MaxHealthMultiplier = health
 	end
 
 	ValidateMaxHealth()
@@ -94,17 +96,9 @@ end
 
 function updateGrowSpeed()
 	local speed = 1.0
-	local trait = nil
+	local trait = getGrowTrait()
 
 	if CurrentRun and CurrentRun.Hero and config.statEnableSpeed then
-		if HeroHasTrait("GrowTrait") then
-			trait = GetHeroTrait("GrowTrait")
-		elseif HeroHasTrait("HealthGrowTrait") then
-			trait = GetHeroTrait("HealthGrowTrait")
-		elseif HeroHasTrait("HubGrowTrait") then
-			trait = GetHeroTrait("HubGrowTrait")
-		end
-
 		if trait then
 			speed = trait.GrowTraitValue or 1.0
 			speed = math.max(speed, 0.5)
@@ -114,7 +108,7 @@ function updateGrowSpeed()
 	--copied from blood drop method. who knew changing move/dash speed wouldn't be intuitive?
 	--this first bit reverses any changes that were made previously
 	if SessionMapState.GrowSpeedChange then
-		ApplyUnitPropertyChanges( CurrentRun.Hero, SessionMapState.GrowSpeedChange, true, true )
+		ApplyUnitPropertyChanges(CurrentRun.Hero, SessionMapState.GrowSpeedChange, true, true)
 	end
 	local allPropertyChanges = {
 		{
@@ -125,43 +119,36 @@ function updateGrowSpeed()
 		{
 			WeaponNames = { "WeaponSprint" },
 			WeaponProperty = "SelfVelocity",
-			ChangeValue = 1100 * ( speed - 1 ),
+			ChangeValue = 1100 * (speed - 1),
 			ChangeType = "Add",
 			ExcludeLinked = true,
 		},
 		{
 			WeaponNames = { "WeaponSprint" },
 			WeaponProperty = "SelfVelocityCap",
-			ChangeValue = 740 * ( speed - 1 ),
+			ChangeValue = 740 * (speed - 1),
 			ChangeType = "Add",
 			ExcludeLinked = true,
 		},
 	}
 	SessionMapState.GrowSpeedChange = allPropertyChanges
-	ApplyUnitPropertyChanges( CurrentRun.Hero, SessionMapState.GrowSpeedChange)
+	ApplyUnitPropertyChanges(CurrentRun.Hero, SessionMapState.GrowSpeedChange)
 end
-
 
 --returns false if hero or trait are not found
 function GrowTraitUpdate(args)
 	local unit = nil
 	local trait = nil
-	local mode = "room"
+	local mode = nil
 
 	if CurrentRun ~= nil and CurrentRun.Hero ~= nil then
 		unit = CurrentRun.Hero
-		if HeroHasTrait("GrowTrait") then
-			trait = GetHeroTrait("GrowTrait")
-		elseif HeroHasTrait("HealthGrowTrait") then
-			trait = GetHeroTrait("HealthGrowTrait")
-			mode = "hp"
-		elseif HeroHasTrait("HubGrowTrait")then
-			trait = GetHeroTrait("HubGrowTrait")
-			mode = "hub"
-		end
+		trait, mode = getGrowTrait()
 	end
 
-	if unit == nil or trait == nil then return false end
+	if unit == nil or trait == nil then
+		return false
+	end
 
 	local growthPerRoom = config.sizeGrowthPerRoom
 	local pitchPerRoom = config.voicePitchChangePerRoom
@@ -177,11 +164,13 @@ function GrowTraitUpdate(args)
 		local finalSize = config.healthModeBigSize or 1.9
 		local finalPitch = config.healthModeBigPitch or -1.4
 
-		if config.healthModeUseStartingHP then startHP = CurrentRun.Hero.trackedHP or startHP end
+		if config.healthModeUseStartingHP then
+			startHP = CurrentRun.Hero.trackedHP or startHP
+		end
 
 		--lerp size and pitch from set starting HP value to size/pitch at 400 and beyond
-		trait.GrowTraitValue = ( 1 * (400 - currentHP) + finalSize * (currentHP - startHP) ) / ( 400 - startHP )
-		trait.BaseChipmunkValue = ( finalPitch * (currentHP - startHP) ) / ( 400 - startHP ) --startPitch is zero, therefore startPitch * (400 - currentHP) == 0
+		trait.GrowTraitValue = (1 * (400 - currentHP) + finalSize * (currentHP - startHP)) / (400 - startHP)
+		trait.BaseChipmunkValue = (finalPitch * (currentHP - startHP)) / (400 - startHP) --startPitch is zero, therefore startPitch * (400 - currentHP) == 0
 	elseif mode == "room" then
 		trait.GrowTraitValue = (config.startingSize or 1) + trait.GrowLevel * growthPerRoom
 		trait.BaseChipmunkValue = (config.startingPitch or 0) + trait.GrowLevel * pitchPerRoom
@@ -190,25 +179,30 @@ function GrowTraitUpdate(args)
 		trait.BaseChipmunkValue = trait.GrowLevel * pitchPerRoom
 	end
 
-
 	if mode == "room" then
 		growthPerRoomDisplay = growthPerRoom * (config.growEveryXRooms or 2)
 	end
 
 	if HeroHasTrait("CirceEnlargeTrait") then
-		trait.GrowTraitValue = trait.GrowTraitValue * 1.25
+		circeGrowMultiplier = 1.25 and trait.GrowTraitValue > 0 or 0.75
+		chipmunkExtra = -0.2 and trait.GrowTraitValue > 0 or 0.3
+		trait.GrowTraitValue = trait.GrowTraitValue * circeGrowMultiplier
 		if mode == "room" then
-			growthPerRoomDisplay = growthPerRoom * 1.25
+			growthPerRoomDisplay = growthPerRoom * circeGrowMultiplier
 		end
 		trait.BaseChipmunkValue = trait.BaseChipmunkValue - 0.2
 	end
 
 	if HeroHasTrait("CirceShrinkTrait") then
-		trait.GrowTraitValue = trait.GrowTraitValue * 0.75
+		circeGrowMultiplier = 0.75 and trait.GrowTraitValue > 0 or 1.25
+		chipmunkExtra = 0.3 and trait.GrowTraitValue > 0 or -0.2
+
+		trait.GrowTraitValue = trait.GrowTraitValue * circeGrowMultiplier
+		trait.GrowTraitValue = trait.GrowTraitValue * circeGrowMultiplier
 		if mode == "room" then
-			growthPerRoomDisplay = growthPerRoom * 0.75
+			growthPerRoomDisplay = growthPerRoom * circeGrowMultiplier
 		end
-		trait.BaseChipmunkValue = trait.BaseChipmunkValue + 0.3
+		trait.BaseChipmunkValue = trait.BaseChipmunkValue + chipmunkExtra
 	end
 
 	if config.voicePitchUseLowerLimit and config.voicePitchLowerLimit ~= nil then
@@ -250,7 +244,9 @@ function GrowTraitUpdate(args)
 	CurrentRun.Hero.trackedScale = currentSize --this exists to allow dialogue to interact
 	PreservedScale = currentSize --lets size transfer between boons
 
-	if GrowUnstuck then currentSize = 1 end
+	if GrowUnstuck then
+		currentSize = 1
+	end
 
 	local growthSpeed = 0.2
 
@@ -266,11 +262,10 @@ function GrowTraitUpdate(args)
 	SetScale({ Id = unit.ObjectId, Fraction = currentSize, Duration = growthSpeed })
 	unit.EffectVfxScale = currentSize
 
-	
 	updateGrowDamage()
 	updateGrowHealth()
 	updateGrowSpeed() --not related to the above growth speed. this one's the stat (mel's run speed)
-	
+
 	return true
 end
 
@@ -324,11 +319,16 @@ function GrowHero(args)
 				if config.playSFX == true then
 					thread(function()
 						PlaySound({ Name = "/SFX/Enemy Sounds/Wringer/WringerChargeUp", Id = CurrentRun.Hero.ObjectId })
-						wait( 0.02 )
+						wait(0.02)
 					end)
 				end
 
-				if config.showText == true then thread( InCombatTextArgs, { TargetId = CurrentRun.Hero.ObjectId, Text = "GrowPopUp", PreDelay = 0.35, Duration = 1.5, Cooldown = 1.0 } ) end
+				if config.showText == true then
+					thread(
+						InCombatTextArgs,
+						{ TargetId = CurrentRun.Hero.ObjectId, Text = "GrowPopUp", PreDelay = 0.35, Duration = 1.5, Cooldown = 1.0 }
+					)
+				end
 				if config.playAnimation == true then
 					if config.altAnimation == true then
 						SetAnimation({ Name = "MelinoeShrink", DestinationId = CurrentRun.Hero.ObjectId })
@@ -336,38 +336,61 @@ function GrowHero(args)
 						SetAnimation({ Name = "MelinoeBoonInteractPowerUp", DestinationId = CurrentRun.Hero.ObjectId })
 					end
 				end
-				if config.showParticles == true then CreateAnimation({ Name = "HealthSparkleShower", DestinationId = CurrentRun.Hero.ObjectId }) end
+				if config.showParticles == true then
+					CreateAnimation({ Name = "HealthSparkleShower", DestinationId = CurrentRun.Hero.ObjectId })
+				end
 			elseif scaleDiff < 0 then
 				--shrink
 				if config.playSFX == true then
 					thread(function()
 						PlaySound({ Name = "/SFX/ThanatosHermesKeepsakeFail", Id = CurrentRun.Hero.ObjectId, Volume = 0.25 })
-						wait( 0.02 )
+						wait(0.02)
 					end)
 				end
 
-				if config.showText == true then thread( InCombatTextArgs, { TargetId = CurrentRun.Hero.ObjectId, Text = "ShrinkPopUp", PreDelay = 0.35, Duration = 1.5, Cooldown = 1.0 } ) end
-				if config.playAnimation == true then SetAnimation({ Name = "MelinoeShrink", DestinationId = CurrentRun.Hero.ObjectId }) end
-				if config.showParticles == true then CreateAnimation({ Name = "HealthSparkleBurst", DestinationId = CurrentRun.Hero.ObjectId }) end
+				if config.showText == true then
+					thread(
+						InCombatTextArgs,
+						{ TargetId = CurrentRun.Hero.ObjectId, Text = "ShrinkPopUp", PreDelay = 0.35, Duration = 1.5, Cooldown = 1.0 }
+					)
+				end
+				if config.playAnimation == true then
+					SetAnimation({ Name = "MelinoeShrink", DestinationId = CurrentRun.Hero.ObjectId })
+				end
+				if config.showParticles == true then
+					CreateAnimation({ Name = "HealthSparkleBurst", DestinationId = CurrentRun.Hero.ObjectId })
+				end
 			end
-			
+
 			if scaleDiff ~= 0 then
 				if config.playVoiceLines == true then
 					local globalVoiceLines = GlobalVoiceLines.GrowBiggerVoiceLines --this is actually all size change voice lines don't be fooled
-					thread( PlayVoiceLines, globalVoiceLines, true )
+					thread(PlayVoiceLines, globalVoiceLines, true)
 				end
-			
-				if config.screenShake == true then ShakeScreen({ Speed = 1000, Distance = 2, Duration = 0.3 }) end
-				if config.controllerVibration == true then thread( DoRumble, { { ScreenPreWait = 0.02, LeftFraction = 0.3, Duration = 0.3 }, } ) end
+
+				if config.screenShake == true then
+					ShakeScreen({ Speed = 1000, Distance = 2, Duration = 0.3 })
+				end
+				if config.controllerVibration == true then
+					thread(DoRumble, { { ScreenPreWait = 0.02, LeftFraction = 0.3, Duration = 0.3 } })
+				end
 			end
 		else
-			thread( InCombatTextArgs, { TargetId = CurrentRun.Hero.ObjectId, Text = "UnstuckEnablePopUp", PreDelay = 0.35, Duration = 2.5, Cooldown = 1.0 } )
+			thread(
+				InCombatTextArgs,
+				{
+					TargetId = CurrentRun.Hero.ObjectId,
+					Text = "UnstuckEnablePopUp",
+					PreDelay = 0.35,
+					Duration = 2.5,
+					Cooldown = 1.0,
+				}
+			)
 		end
 	end
 end
 
 function AddGrowTraitToHero(args)
-	
 	local init = false
 	local skipUI = false --this stops new save files from crashing.
 	local preserveSize = false --allows keeping size from run to hub or vice versa
@@ -398,7 +421,9 @@ function AddGrowTraitToHero(args)
 
 	--use init if starting a new run. resets certain tracking variables
 	if init == true then
-		if not preserveSize then CurrentRun.Hero.trackedScale = config.startingSize or 1.0 end
+		if not preserveSize then
+			CurrentRun.Hero.trackedScale = config.startingSize or 1.0
+		end
 		CurrentRun.Hero.trackedScaleDiff = 0
 		CurrentRun.Hero.trackedHP = CurrentRun.Hero.MaxHealth
 	end
@@ -418,12 +443,10 @@ function AddGrowTraitToHero(args)
 				local finalSize = config.healthModeBigSize or 1.9
 
 				--lerp size to make sure start size is recorded correctly
-				CurrentRun.Hero.trackedScale = ( 1 * (400 - currentHP) + finalSize * (currentHP - startHP) ) / ( 400 - startHP )
+				CurrentRun.Hero.trackedScale = (1 * (400 - currentHP) + finalSize * (currentHP - startHP)) / (400 - startHP)
 			end
 		end
 	end
-	
-
 
 	local traitsToCheck = { "HubGrowTrait", "GrowTrait", "HealthGrowTrait" }
 	local traitWasRemoved = false
@@ -433,7 +456,7 @@ function AddGrowTraitToHero(args)
 	for _, traitCheck in pairs(traitsToCheck) do
 		if traitCheck ~= traitName then
 			if HeroHasTrait(traitCheck) then
-				RemoveTrait(CurrentRun.Hero, traitCheck, {SkipUIUpdate = skipUI})
+				RemoveTrait(CurrentRun.Hero, traitCheck, { SkipUIUpdate = skipUI })
 				traitWasRemoved = true
 			end
 		elseif remakeTrait == true then
@@ -441,19 +464,21 @@ function AddGrowTraitToHero(args)
 				local trait = GetHeroTrait(traitCheck)
 				stacksToKeep = trait.GrowLevel or 0
 				roomCounter = trait.CurrentRoom or 0
-				RemoveTrait(CurrentRun.Hero, traitCheck, {SkipUIUpdate = skipUI})
+				RemoveTrait(CurrentRun.Hero, traitCheck, { SkipUIUpdate = skipUI })
 			end
 		end
 	end
 
-	if HeroHasTrait(traitName) then return end
+	if HeroHasTrait(traitName) then
+		return
+	end
 
 	local tD = GetProcessedTraitData({
 		Unit = CurrentRun.Hero,
 		TraitName = traitName,
 		Rarity = "Common",
 	})
-	
+
 	--anti-crash for hub area
 	tD.Name = traitName
 	tD.TraitOrderingValueCache = -1
@@ -462,7 +487,7 @@ function AddGrowTraitToHero(args)
 	if config.hideBoon == true and remakeTrait == true then
 		tD.ShowInHUD = nil
 	end
-	
+
 	--[[if traitName == "GrowTrait" then
 		if tD.RoomsPerUpgrade then
 			tD.RoomsPerUpgrade.Amount = config.growEveryXRooms or 2
@@ -485,11 +510,11 @@ function AddGrowTraitToHero(args)
 		end
 
 		trait.GrowTraitGrowthPerRoomDisplay = (config.sizeGrowthPerRoom or 0.0225) * (config.growEveryXRooms or 2)
-		
+
 		if remakeTrait == true then
 			trait.GrowLevel = stacksToKeep
 			trait.CurrentRoom = roomCounter
-			TraitUIUpdateText( trait )
+			TraitUIUpdateText(trait)
 			GrowHero({ sizeAbsolute = true, changeValue = stacksToKeep })
 		end
 	end
@@ -514,14 +539,13 @@ function AddGrowTraitToHero(args)
 	if preserveSize == true then
 		local trait = nil
 		local m = nil
-		if HeroHasTrait("GrowTrait") then 
+		if HeroHasTrait("GrowTrait") then
 			trait = GetHeroTrait("GrowTrait")
 			m = "room"
 		elseif HeroHasTrait("HubGrowTrait") then
 			trait = GetHeroTrait("HubGrowTrait")
 			m = "hub"
 		end
-
 
 		if trait and m then
 			local perStack = config.sizeGrowthPerRoom
@@ -542,8 +566,7 @@ function AddGrowTraitToHero(args)
 				end]]
 
 				local growLevel = (CurrentRun.Hero.preservedScale - 1) / perStack
-				GrowHero({ sizeAbsolute = true, changeValue = growLevel})
-
+				GrowHero({ sizeAbsolute = true, changeValue = growLevel })
 			end
 		end
 	end
@@ -552,8 +575,10 @@ function AddGrowTraitToHero(args)
 end
 
 function CheckChamberTraits_wrap()
-	if not HeroHasTrait("GrowTrait") then return end
-	
+	if not HeroHasTrait("GrowTrait") then
+		return
+	end
+
 	local trait = GetHeroTrait("GrowTrait")
 
 	if trait.CurrentRoom == 0 then
@@ -629,6 +654,6 @@ function resetSettings()
 	config.muchSmallerBind = "Alt P"
 	config.muchSmallerModifier = "Alt"
 	config.muchSmallerKey = "P"
-	AddGrowTraitToHero({remakeTrait = true})
+	AddGrowTraitToHero({ remakeTrait = true })
 	setBinds()
 end
