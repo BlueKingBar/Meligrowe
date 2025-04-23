@@ -73,7 +73,7 @@ modutil.mod.Path.Wrap("ApplyTraitSetupFunctions", function(base, unit, args)
 	base(unit, args)
 
 	if not args or (args and not args.Context) then
-		GrowTraitUpdate()
+		GrowTraitUpdate({ forceInstant = true }) --don't animate size change. usually occurs when entering a room
 	end
 end)
 

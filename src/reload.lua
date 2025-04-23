@@ -250,7 +250,9 @@ function GrowTraitUpdate(args)
 
 	local growthSpeed = 0.2
 
-	if config.growthSpeed then
+	if args ~= nil and args.forceInstant == true then
+		growthSpeed = 0.0
+	elseif config.growthSpeed then
 		if config.growthSpeed == "Instant" then
 			growthSpeed = 0.0
 		elseif config.growthSpeed == "Slow" then
@@ -274,10 +276,12 @@ function GrowHero(args)
 	local changeValueAbs = 0
 	local sizeAbsolute = false
 	local lastScale = nil
+	local forceInstant = false
 	if args then
 		changeValue = args.changeValue or 1
 		changeValueAbs = args.changeValue or 0
 		sizeAbsolute = args.sizeAbsolute or false
+		forceInstant = args.forceInstant or false
 	end
 	if CurrentRun.Hero ~= nil then
 		lastScale = CurrentRun.Hero.trackedScale --checks for size changes to affect presentation (grow vs. shrink)
@@ -303,7 +307,7 @@ function GrowHero(args)
 					trait.GrowLevel = changeValueAbs
 				end
 			end
-			GrowTraitUpdate()
+			GrowTraitUpdate({ forceInstant = forceInstant })
 		end
 	else
 		return
@@ -514,8 +518,8 @@ function AddGrowTraitToHero(args)
 		if remakeTrait == true then
 			trait.GrowLevel = stacksToKeep
 			trait.CurrentRoom = roomCounter
-			TraitUIUpdateText(trait)
-			GrowHero({ sizeAbsolute = true, changeValue = stacksToKeep })
+			TraitUIUpdateText( trait )
+			GrowHero({ sizeAbsolute = true, changeValue = stacksToKeep, forceInstant = true })
 		end
 	end
 
@@ -523,7 +527,7 @@ function AddGrowTraitToHero(args)
 		local trait = GetHeroTrait("HubGrowTrait")
 
 		trait.GrowLevel = stacksToKeep
-		GrowHero({ sizeAbsolute = true, changeValue = stacksToKeep })
+		GrowHero({ sizeAbsolute = true, changeValue = stacksToKeep, forceInstant = true })
 	end
 
 	--if boon was switched or added mid-run, set GrowLevel and room counter to their appropriate levels
@@ -554,24 +558,13 @@ function AddGrowTraitToHero(args)
 			end
 
 			if perStack ~= 0 then
-				--[[local unrounded = (CurrentRun.Hero.preservedScale - 1) / perStack
-
-				if unrounded >= 0 then
-					trait.GrowLevel = math.floor(unrounded + 0.5)
-				else --makes sure rounding doesn't fuck up when negative
-					unrounded = -unrounded
-					unrounded = math.floor(unrounded + 0.5)
-					unrounded = -unrounded
-					trait.GrowLevel = unrounded
-				end]]
-
 				local growLevel = (CurrentRun.Hero.preservedScale - 1) / perStack
-				GrowHero({ sizeAbsolute = true, changeValue = growLevel })
+				GrowHero({ sizeAbsolute = true, changeValue = growLevel, forceInstant = true})
 			end
 		end
 	end
 
-	GrowTraitUpdate()
+	GrowTraitUpdate({ forceInstant = true }) --don't animate growth when we add a new trait on
 end
 
 function CheckChamberTraits_wrap()
@@ -584,13 +577,6 @@ function CheckChamberTraits_wrap()
 	if trait.CurrentRoom == 0 then
 		GrowHero({ changeValue = (config.growEveryXRooms or 2), doPresentation = true })
 	end
-
-	--[[imitating condition structure from Eris keepsake (funny bell of damage)
-	if currentEncounter == currentRoom.Encounter or currentEncounter == MapState.EncounterOverride then
-		if trait.CurrentRoom == trait.RoomsPerUpgrade.Amount - 1  then
-				GrowHero({ changeValue = (config.growEveryXRooms or 2), doPresentation = true })
-		end
-	end]]
 end
 
 function resetSettings()
