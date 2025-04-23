@@ -102,27 +102,32 @@ function DisplayTextLine_wrap( screen, source, line, parentLine, nextLine, args 
 		if config.scalePortrait == true then
 			local sizeChange = 1.0
 			local posX = ScreenCenterX - 490
-			local posY = ScreenCenterY + 105 + 435
+			local posY = ScreenCenterY + 105
 
 			print (screen.CurrentPortrait or "No Portrait.")
 			if CurrentRun and CurrentRun.Hero and CurrentRun.Hero.trackedScale and line.UsePlayerSource then
 				if CurrentRun.Hero.trackedScale >= 1 then
-					local shit = 3
-					local fuck = 6
+					local shit = 2
+					local fuck = 2
 					--basically shit and fuck affect how fast portrait scale grows with actual size
 					--shit divides scaling before she hits 1.25, fuck divides scaling after.
+					--so like if shit = 3, 0.25 * 3 + 1, or 1.75x size, is where she hits 1.25x portrait
+					--and if fuck = 6, then she grows half as much after that point
 					if CurrentRun.Hero.trackedScale > 0.25 * shit + 1 then
 						sizeChange = 1 + (CurrentRun.Hero.trackedScale - 1 + fuck / 4 - shit / 4) / fuck
+						--scale from TOP of screen once portrait gets bigger than 1.25x
+						posY = posY + math.floor(-108.75 + (sizeChange - 1.25) * 330) -- -108.75 is -((sizeChange - 1.0) * 435) at 1.25
 					else
 						sizeChange = 1 + (CurrentRun.Hero.trackedScale - 1) / shit
+						posY = posY - math.floor((sizeChange - 1.0) * 435) -- keep position consistent to bottom of screen
 					end
 				else
 					sizeChange = 1 + (CurrentRun.Hero.trackedScale - 1)
+					posY = posY - math.floor((sizeChange - 1.0) * 435) -- keep position consistent to bottom of screen
 				end
+
 				print("Size : "..tostring(sizeChange))
 			end
-
-			posY = posY - math.floor(sizeChange * 435) -- keep position consistent to bottom of screen
 
 			SetScale({ Id = screen.PortraitId, Fraction = sizeChange })
 			Teleport({ Id = screen.PortraitId, OffsetX = posX, OffsetY = posY })
