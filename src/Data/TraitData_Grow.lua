@@ -12,7 +12,7 @@ local text_to_insert = sjson.to_object({
 	Id = "GrowTrait",
 	InheritFrom = "BaseBoon",
 	DisplayName = "Increasing Heft",
-	Description = "{#UpgradeFormat}{$TooltipData.ExtractData.CurrentMelSize:P} {#Prev}size. Every {#BoldFormat}{$TooltipData.ExtractData.TooltipRoomInterval} {$Keywords.EncounterPlural}{#Prev}, gains {#BoldFormatGraft}+{$TooltipData.ExtractData.MelSizeIncreasePerXRooms:F} {#Prev}size.",
+	Description = "{#UpgradeFormat}{$TooltipData.ExtractData.CurrentMelSize:P} {#Prev}size. Every {#BoldFormat}{$TooltipData.ExtractData.TooltipRoomInterval} {$Keywords.EncounterPlural}{#Prev}, gains {#BoldFormatGraft}{$TooltipData.ExtractData.MelSizeIncreasePerXRooms:F} {#Prev}in size.",
 }, order)
 
 local text_to_insert2 = sjson.to_object({
@@ -29,6 +29,13 @@ local text_to_insert3 = sjson.to_object({
 	Description = "{#UpgradeFormat}{$TooltipData.ExtractData.CurrentMelSize:P} {#Prev}size. Press insert to set size control and other settings!",
 }, order)
 
+local text_to_insert4 = sjson.to_object({
+	Id = "GrowTrait_Shrink",
+	InheritFrom = "BaseBoon",
+	DisplayName = "Diminishing Stature",
+	Description = "{#UpgradeFormat}{$TooltipData.ExtractData.CurrentMelSize:P} {#Prev}size. Every {#BoldFormat}{$TooltipData.ExtractData.TooltipRoomInterval} {$Keywords.EncounterPlural}{#Prev}, loses {#BoldFormatGraft}{$TooltipData.ExtractData.MelSizeIncreasePerXRooms:F} {#Prev}in size.",
+}, order)
+
 local textfile = rom.path.combine(rom.paths.Content, "Game/Text/en/TraitText.en.sjson")
 
 sjson.hook(textfile, function(sjsonData)
@@ -38,6 +45,8 @@ sjson.hook(textfile, function(sjsonData)
 	table.insert(sjsonData.Texts, text_to_insert2)
 	---@diagnostic disable-next-line: param-type-mismatch
 	table.insert(sjsonData.Texts, text_to_insert3)
+	---@diagnostic disable-next-line: param-type-mismatch
+	table.insert(sjsonData.Texts, text_to_insert4)
 end)
 
 --insert pop-up text for growth
@@ -372,7 +381,7 @@ GrowTraits = {
 			{
 				Key = "GrowTraitGrowthPerRoomDisplay",
 				ExtractAs = "MelSizeIncreasePerXRooms",
-				Format = "Percent",
+				Format = "FlatPercent",
 				DecimalPlaces = 4,
 			},
 			{

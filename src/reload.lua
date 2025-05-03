@@ -264,6 +264,16 @@ function GrowTraitUpdate(args)
 	SetScale({ Id = unit.ObjectId, Fraction = currentSize, Duration = growthSpeed })
 	unit.EffectVfxScale = currentSize
 
+	if mode == "room" and config.sizeGrowthPerRoom < 0 then
+		trait.CustomTitle = "GrowTrait_Shrink"
+		trait.CustomTrayText = "GrowTrait_Shrink"
+	else
+		trait.CustomTitle = nil
+		trait.CustomTrayText = nil
+	end
+
+	trait.GrowTraitGrowthPerRoomDisplay = (config.sizeGrowthPerRoom or 0.0225) * (config.growEveryXRooms or 2)
+
 	updateGrowDamage()
 	updateGrowHealth()
 	updateGrowSpeed() --not related to the above growth speed. this one's the stat (mel's run speed)
