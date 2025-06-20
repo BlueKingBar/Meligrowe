@@ -2,8 +2,9 @@
 ---@diagnostic disable: deprecated
 ---@diagnostic disable: need-check-nil
 
-function BiomeMapPresentation_wrap( source, args )
+function BiomeMapPresentation_wrap( source, args, contextArgs )
 
+	contextArgs = contextArgs or {}
 	local labelData =
 	{
 		{
@@ -15,25 +16,28 @@ function BiomeMapPresentation_wrap( source, args )
 			Glow = "GUI\\BiomeMap\\BiomeMap_Glow_F", GlowOffsetX = -690, GlowOffsetY = 270 + 355,
 			SelectedLoopScale = 1.0, SelectedLoopOffsetX = -680, SelectedLoopOffsetY = 270 + 340,
 			Fog = "GUI\\BiomeMap\\BiomeMap_Fog_F", FogOffsetX = -680, FogOffsetY = 270 + 340,
+			AmbienceGenerators = { "CreakingTreeAmbienceGenerator", "FogRiverAmbienceGenerator" },
 		},
 		{
 			Text = "BiomeG", OffsetX = 20, OffsetY = 480,
 			Glow = "GUI\\BiomeMap\\BiomeMap_Glow_G", GlowOffsetX = 20, GlowOffsetY = 480 + 340,
 			SelectedLoopScale = 0.5, SelectedLoopOffsetX = 20, SelectedLoopOffsetY = 480 + 340,
 			Fog = "GUI\\BiomeMap\\BiomeMap_Fog_G", FogOffsetX = 20, FogOffsetY = 480 + 340,
-			--SpotlightScale = 1.5,
+			AmbienceGenerators = { "SlowMovingBloodRiverAmbience", "OceanusBubblesAmbienceGenerator", },
 		},
 		{
 			Text = "BiomeH", OffsetX = 633, OffsetY = 1335,
 			Glow = "GUI\\BiomeMap\\BiomeMap_Glow_H", GlowOffsetX = 643, GlowOffsetY = 750 + 320,
 			SelectedLoopScale = 0.55, SelectedLoopOffsetX = 629, SelectedLoopOffsetY = 728 + 340,
 			Fog = "GUI\\BiomeMap\\BiomeMap_Fog_H", FogOffsetX = 661, FogOffsetY = 750 + 340,
+			AmbienceGenerators = { "LeavesRustleAmbienceGenerator", "FieldsAmbienceGenerator", },
 		},
 		{
 			Text = "BiomeI", OffsetX = 33, OffsetY = 1935,
 			Glow = "GUI\\BiomeMap\\BiomeMap_Glow_I", GlowOffsetX = 11, GlowOffsetY = 1260 + 290,
 			SelectedLoopScale = 0.60, SelectedLoopOffsetX = 10, SelectedLoopOffsetY = 1160 + 340,
 			Fog = "GUI\\BiomeMap\\BiomeMap_Fog_I", FogOffsetX = 30, FogOffsetY = 1260 + 340,
+			AmbienceGenerators = { "TickTockAmbienceGenerator", "TartarusAmbienceGenerator" },
 		},
 
 		{
@@ -41,6 +45,7 @@ function BiomeMapPresentation_wrap( source, args )
 			Glow = "GUI\\BiomeMap\\BiomeMap_Glow_N", GlowOffsetX = 613, GlowOffsetY = -610,
 			SelectedLoopScale = 0.5, SelectedLoopOffsetX = 604, SelectedLoopOffsetY = -614,
 			Fog = "GUI\\BiomeMap\\BiomeMap_Fog_N", FogOffsetX = 604, FogOffsetY = -614,
+			AmbienceGenerators = { "EphyraAmbienceGenerator", },
 		},
 
 		{
@@ -48,6 +53,7 @@ function BiomeMapPresentation_wrap( source, args )
 			Glow = "GUI\\BiomeMap\\BiomeMap_Glow_O", GlowOffsetX = 15, GlowOffsetY = -910,
 			SelectedLoopScale = 0.65, SelectedLoopOffsetX = 12, SelectedLoopOffsetY = -905,
 			Fog = "GUI\\BiomeMap\\BiomeMap_Fog_O", FogOffsetX = 15, FogOffsetY = -910,
+			AmbienceGenerators = { "OceanWavesAmbienceGenerator", },
 		},
 
 		{
@@ -55,16 +61,39 @@ function BiomeMapPresentation_wrap( source, args )
 			Glow = "GUI\\BiomeMap\\BiomeMap_Glow_P", GlowOffsetX = 16, GlowOffsetY = -1540,
 			SelectedLoopScale = 0.5, SelectedLoopOffsetX = 16, SelectedLoopOffsetY = -1560,
 			Fog = "GUI\\BiomeMap\\BiomeMap_Fog_P", FogOffsetX = 16, FogOffsetY = -1560,
+			AmbienceGenerators = { "WindAmbienceGenerator", "OlympusAmbienceGenerator", "ChimesAmbienceGenerator", },
 		},
 	}
 
-	killTaggedThreads("MetaUpgradePresentation")
+	killTaggedThreads( "MetaUpgradePresentation" )
+	killTaggedThreads( "RespawningCoverManager" )
+	killWaitUntilThreads( "RespawningCoverDeath" )
+	if source.RespawningCoverActiveIds ~= nil then
+		Destroy({ Ids = GetAllValues( source.RespawningCoverActiveIds ) }) -- Need to remove before they interally chain back to another animation
+	end
+	for enemyId, enemy in pairs( ShallowCopyTable( ActiveEnemies ) ) do
+		-- Should maybe call the full CleanupEnemy() but starting leaner
+		killTaggedThreads( "EnemyHealthBarFalloff"..enemy.ObjectId )
+		killTaggedThreads( "Activating"..enemy.ObjectId )
+		killTaggedThreads( enemy.AIThreadName )
+		killWaitUntilThreads( enemy.AINotifyName )
+		BlockVfx({ DestinationId = enemyId })
+	end
+	if source.FootstepAnimationL ~= nil then
+		SwapAnimation({ Name = "FireFootstepL-Spawner", DestinationName = source.FootstepAnimationL, Reverse = true })
+	end
+	if source.FootstepAnimationR ~= nil then
+		SwapAnimation({ Name = "FireFootstepR-Spawner", DestinationName = source.FootstepAnimationR, Reverse = true })
+	end
 	for _, id in pairs(SessionMapState.ShownMetaUpgradeCardIds) do
 		StopAnimation({  Names = { "MetaUpgradeCardFlip", "CardFlipGlowA", "CardFlipGlowB" }, DestinationId = id })
 	end
+	StopUnattachedAnimation({  Names = { "ErisBombardmentCrater", "ErisBombardmentCraterFade", }, PreventChain = true })
 	Destroy({ Ids = CollapseTable(SessionMapState.ShownMetaUpgradeCardIds) })
 
 	AddInputBlock({ Name = "BiomeMapPresentation" })
+	BlockVfx({ DestinationNames = { "Standing_FX", "Standing_FX_02", } })
+	UnloadPackageGroup({ Group = "Biome" })
 	LoadPackages({ Name = "BiomeMap", IgnoreAssert = true })
 
 	GameState.BiomeMapRecord[args.BiomeStart] = (GameState.BiomeMapRecord[args.BiomeStart] or 0) + 1
@@ -116,6 +145,13 @@ function BiomeMapPresentation_wrap( source, args )
 			table.insert( mapIds, glowId )
 		end
 
+		if label.AmbienceGenerators ~= nil then
+			for i, ambienceGenerator in ipairs( label.AmbienceGenerators ) do
+				local ambienceId = SpawnObstacle({ Name = ambienceGenerator, Group = "Combat_UI_Additive", LocationX = label.GlowOffsetX, LocationY = label.GlowOffsetY })
+				table.insert( mapIds, ambienceId )
+			end
+		end
+
 		if label.Text == args.BiomeEnd then
 			local startingAlpha = 0.0
 			selectedCircleId = SpawnObstacle({ Name = "BlankObstacle", Group = "Combat_Menu_TraitTray_Overlay_Additive", LocationX = label.SelectedLoopOffsetX, LocationY = label.SelectedLoopOffsetY })
@@ -153,7 +189,7 @@ function BiomeMapPresentation_wrap( source, args )
 	SetThingProperty({ Property = "GrannyModel", Value = "MelMarker_Mesh", DestinationId = melId })
 	SetAnimation({ Name = "MelMarkerIdle", DestinationId = melId })
 	
-    --MODDED START
+	--MODDED START
     if config.scaleMapDoll == true and CurrentRun and CurrentRun.Hero and CurrentRun.Hero.trackedScale then
         local adjustSize = CurrentRun.Hero.trackedScale
         SetScale({ Id = melId, Fraction = adjustSize })
@@ -166,7 +202,6 @@ function BiomeMapPresentation_wrap( source, args )
 			SetScale({ Id = melId, Fraction = 0.65 })
 		end
 	end
-
 	--MODDED END
 
 	local playerTeamIds = { melId }
@@ -224,12 +259,11 @@ function BiomeMapPresentation_wrap( source, args )
 		LocationX = args.HeroStartOffsetX + args.HeroMoveOffsetX, LocationY = args.HeroStartOffsetY + args.HeroMoveOffsetY })
 	
 	-- show completed bounties from previous region
-	for bountyName, v in pairs( CurrentRun.BountiesCompleted ) do
+	for bountyName, v in pairs( CurrentRun.ShrineBountiesCompleted ) do
 		local bountyData = BountyData[bountyName]
 		if bountyData ~= nil then
 			local prevRoom = GetPreviousRoom( CurrentRun )
-			if CurrentRun.CurrentRoom.Encounter.Name == bountyData.Encounter or
-				prevRoom.Encounter.Name == bountyData.Encounter then
+			if ContainsAny( bountyData.Encounters, { CurrentRun.CurrentRoom.Encounter.Name, prevRoom.Encounter.Name } ) then
 
 				BiomeMapShowBounty( source, args, bountyData )
 
@@ -328,7 +362,7 @@ function BiomeMapPresentation_wrap( source, args )
 	-- show any bounties on the current region
 	if args.ShrineBounty ~= nil and GameState.ActiveShrineBounty ~= nil and ( CurrentRun.ActiveBounty == nil or CurrentHubRoom ~= nil ) then
 		local bountyData = BountyData[GameState.ActiveShrineBounty]
-		if bountyData ~= nil and bountyData.Encounter == args.ShrineBounty then
+		if bountyData ~= nil and Contains( bountyData.Encounters, args.ShrineBounty ) then
 			
 			BiomeMapShowBounty( source, args, bountyData )		
 
@@ -362,6 +396,9 @@ function BiomeMapPresentation_wrap( source, args )
 		wait( args.AdditionalFirstTimeWait )
 	end
 	PlaySound({ Name = "/Leftovers/World Sounds/MapZoomInShortHigh" })
-	FullScreenFadeOutAnimation()
+	FullScreenFadeOutAnimation( "RoomTransitionIn_Down" )
+	if contextArgs.NextRoom ~= nil then
+		contextArgs.NextRoom.EnterWipeAnimationOverride = "RoomTransitionOut_Down"
+	end
 	RemoveInputBlock({ Name = "BiomeMapPresentation" })
 end

@@ -61,6 +61,57 @@ function getGrowTrait()
 	return trait, mode
 end
 
+--sets portrait scaling/movement data (kudos to SGG for the convenient table so I don't have to override the portrait function anymore)
+function updatePortraitScale()
+
+	local posX = 0
+	local posY = 0
+	local sizeChange = 1
+
+	if CurrentRun and CurrentRun.Hero then
+		if config.scalePortrait == true and CurrentRun.Hero.trackedScale then
+			if CurrentRun.Hero.trackedScale >= 1 then
+				local shit = 2
+				local fuck = 2
+				--basically shit and fuck affect how fast portrait scale grows with actual size
+				--shit divides scaling before she hits 1.25, fuck divides scaling after.
+				--so like if shit = 3, 0.25 * 3 + 1, or 1.75x size, is where she hits 1.25x portrait
+				--and if fuck = 6, then she grows half as much after that point
+				if CurrentRun.Hero.trackedScale > 0.25 * shit + 1 then
+					sizeChange = 1 + (CurrentRun.Hero.trackedScale - 1 + fuck / 4 - shit / 4) / fuck
+					--scale from TOP of screen once portrait gets bigger than 1.25x
+					posY = math.floor(-108.75 + (sizeChange - 1.25) * 330) -- -108.75 is -((sizeChange - 1.0) * 435) at 1.25
+					posX = -50 --I like what SG did with that so xP
+				else
+					sizeChange = 1 + (CurrentRun.Hero.trackedScale - 1) / shit
+					posY = -math.floor((sizeChange - 1.0) * 435) -- keep position consistent to bottom of screen
+					posX = math.max((sizeChange - 1) * -200, -50)
+				end
+			else
+				sizeChange = CurrentRun.Hero.trackedScale
+				posY = -math.floor((sizeChange - 1.0) * 435) -- keep position consistent to bottom of screen
+				posX = math.max((sizeChange - 1) * 80, -20)
+			end
+
+		else
+			--defaults if we can't get custom portrait override for any reason, or it's disabled. local inits are equivalent to no override
+			if HeroHasTrait("CirceEnlargeTrait") then
+				posX = -50
+				posY = -40
+				sizeChange = 1.2
+			elseif HeroHasTrait("CirceShrinkTrait") then
+				posX = -20
+				posY = 105
+				sizeChange = 0.75
+			end
+		end
+
+		CurrentRun.Hero.PortraitOverrides = {OffsetX = posX, OffsetY = posY, Scale = sizeChange}
+	else
+		return
+	end
+end
+
 function updateGrowDamage()
 	local damage = 1.0
 	local trait = getGrowTrait()
@@ -274,6 +325,7 @@ function GrowTraitUpdate(args)
 
 	trait.GrowTraitGrowthPerRoomDisplay = (config.sizeGrowthPerRoom or 0.0225) * (config.growEveryXRooms or 2)
 
+	updatePortraitScale()
 	updateGrowDamage()
 	updateGrowHealth()
 	updateGrowSpeed() --not related to the above growth speed. this one's the stat (mel's run speed)
