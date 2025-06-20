@@ -67,7 +67,10 @@ Gain the booming voice of a titan, or try Arachne's cadence on for size!
   - Make sure to pick Manual Install from that page and follow the directions.
   - Select Hades 2 as your game.
   - Search for Meligrowe in online mods, or go here and click Install with Mod Manager: https://thunderstore.io/c/hades-ii/p/RoboBro/Meligrowe/ (If you're there already, scroll back up!)
-  - Hit Download, wait for the install to finish, then hit Start Modded.
+  - Hit Download, wait for the install to finish.
+  - Make sure the dependency mods were also downloaded. With no other gameplay mods, 6 more mods should have shown up in addition to Meligrowe.
+    - You can see the list of these under Installed -> Meligrowe -> Associated and find those mods manually if needed.
+  - Click Start Modded in the upper left.
 
 # Configuration
 
