@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [1.0.3] - 2025-06-20
+
 - Updated mod for The Unseen Update.
 - Portrait scaling uses new functionality since it was officially added for Circe's boons. Thanks SGG!
   - This means if you turn off portrait growth in the mod, it should behave nicely and still change Mel's portrait with Circe's boons.
@@ -9,8 +11,7 @@
   - Vertical is unchanged for modded behavior.
 - You can romance Moros while big or small as long as you don't actually take Circe's size boons.
   - Yeah I saw your comment, Supergiant. This isn't a real patchnote, I just wanted to say I saw you being cheeky.
-  ![moros](https://github.com/user-attachments/assets/b7807350-f948-4b6c-bb2f-fbdb8b8a23c2)
-
+    ![moros](https://github.com/user-attachments/assets/b7807350-f948-4b6c-bb2f-fbdb8b8a23c2)
 
 ## [1.0.2] - 2025-04-23
 
@@ -31,7 +32,8 @@
 
 - First version of the mod!
 
-[unreleased]: https://github.com/BlueKingBar/Meligrowe/compare/1.0.2...HEAD
+[unreleased]: https://github.com/BlueKingBar/Meligrowe/compare/1.0.3...HEAD
+[1.0.3]: https://github.com/BlueKingBar/Meligrowe/compare/1.0.2...1.0.3
 [1.0.2]: https://github.com/BlueKingBar/Meligrowe/compare/1.0.1...1.0.2
 [1.0.1]: https://github.com/BlueKingBar/Meligrowe/compare/1.0.0...1.0.1
 [1.0.0]: https://github.com/BlueKingBar/Meligrowe/compare/e9df8722fd55dad3e20a43e909ec63fb0958657b...1.0.0
