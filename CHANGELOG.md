@@ -2,6 +2,16 @@
 
 ## [Unreleased]
 
+- Updated mod for The Unseen Update.
+- Portrait scaling uses new functionality since it was officially added for Circe's boons. Thanks SGG!
+  - This means if you turn off portrait growth in the mod, it should behave nicely and still change Mel's portrait with Circe's boons.
+- Slightly tweaked portrait scaling. Goes _slightly_ left to match SGG's portrait position for growth/shrinking.
+  - Vertical is unchanged for modded behavior.
+- You can romance Moros while big or small as long as you don't actually take Circe's size boons.
+  - Yeah I saw your comment, Supergiant. This isn't a real patchnote, I just wanted to say I saw you being cheeky.
+  ![moros](https://github.com/user-attachments/assets/b7807350-f948-4b6c-bb2f-fbdb8b8a23c2)
+
+
 ## [1.0.2] - 2025-04-23
 
 - Increased limits for pitch values, starting size HP value, and size limits (you can now set lower limits above 1.0 and upper limits below that)
