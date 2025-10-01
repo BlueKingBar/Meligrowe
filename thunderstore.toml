@@ -5,7 +5,7 @@ schemaVersion = "0.0.1"
 [package]
 namespace = "RoboBro"
 name = "Meligrowe"
-versionNumber = "1.0.3"
+versionNumber = "1.0.4"
 description = "Size-changing toybox for Hades 2! Grow Melinoe bigger or shrink her smaller as you play a run. Make her voice pitch deeper or higher. Highly configurable!"
 websiteUrl = "https://github.com/BlueKingBar/Meligrowe"
 containsNsfwContent = false
