@@ -70,6 +70,12 @@ function BiomeMapPresentation_wrap( source, args, contextArgs )
 	killWaitUntilThreads( "RespawningCoverDeath" )
 	if source.RespawningCoverActiveIds ~= nil then
 		Destroy({ Ids = GetAllValues( source.RespawningCoverActiveIds ) }) -- Need to remove before they interally chain back to another animation
+		wait( 0.03 )
+	end
+	local destroyIds = GetIdsByType({ Name = "ShipsFishFlap" })
+	if not IsEmpty( destroyIds ) then
+		Destroy({ Ids = destroyIds })
+		wait( 0.2 ) -- Need to wait for the sounds to finish before unloading them
 	end
 	for enemyId, enemy in pairs( ShallowCopyTable( ActiveEnemies ) ) do
 		-- Should maybe call the full CleanupEnemy() but starting leaner
@@ -78,6 +84,7 @@ function BiomeMapPresentation_wrap( source, args, contextArgs )
 		killTaggedThreads( enemy.AIThreadName )
 		killWaitUntilThreads( enemy.AINotifyName )
 		BlockVfx({ DestinationId = enemyId })
+		Destroy({ Id = enemyId })
 	end
 	if source.FootstepAnimationL ~= nil then
 		SwapAnimation({ Name = "FireFootstepL-Spawner", DestinationName = source.FootstepAnimationL, Reverse = true })
@@ -272,26 +279,22 @@ function BiomeMapPresentation_wrap( source, args, contextArgs )
 				SetAlpha({ Id = args.ShrinePointItemId, Fraction = 1.0 })
 				SetAlpha({ Id = args.WeaponItemId, Fraction = 1.0 })
 
-				wait(1.1)
-				CreateAnimation({ Name = "ExorcismCorrectFlash", DestinationId = args.TargetItemId, Group = "Combat_Menu_TraitTray_Overlay", Scale = 0.9, OffsetY = -45, OffsetX = 10 })
+				wait(0.8)
+				CreateAnimation({ Name = "BiomeMapBountyComplete", DestinationId = args.TargetItemId, Group = "Combat_Menu_TraitTray_Overlay", Scale = 1.0, OffsetY = 0, OffsetX = 0 }) --nopkg
 				PlaySound({ Name = "/SFX/Menu Sounds/BiomeMapRewardIcon", Id = args.TargetItemId })
-				wait(0.05)
-				SetColor({ Id = args.TargetItemId, Color = Color.Black, Duration = 0.25})
-				SetColor({ Id = args.BountyBackingId, Color = Color.Black, Duration = 0.25})
-				SetColor({ Id = args.ShrinePointItemId, Color = Color.Black, Duration = 0.25})
-				SetColor({ Id = args.WeaponItemId, Color = Color.Black, Duration = 0.25})
+				wait(0.45)
+				SetColor({ Id = args.TargetItemId, Color = Color.Black, Duration = 0.25, EaseIn = 0, EaseOut = 1})
+				SetColor({ Id = args.BountyBackingId, Color = Color.Black, Duration = 0.25, EaseIn = 0, EaseOut = 1})
+				SetColor({ Id = args.ShrinePointItemId, Color = Color.Black, Duration = 0.25, EaseIn = 0, EaseOut = 1})
+				SetColor({ Id = args.WeaponItemId, Color = Color.Black, Duration = 0.25, EaseIn = 0, EaseOut = 1})
 				ModifyTextBox({ Id = args.ShrinePointItemId, Color = Color.Black }) 
-				SetAlpha({ Id = args.ShrinePointItemId, Fraction = 0, Duration = 0.25 })
+				SetAlpha({ Id = args.ShrinePointItemId, Fraction = 0, Duration = 0.25, EaseIn = 0, EaseOut = 1 })
 				wait(0.05)
 			end
 		end
 	end
 	
 	local cameraDuration = 1.0
-	local cameraEndOffsetY = 0
-	if args.CameraEndOffsetY then
-		cameraEndOffsetY = args.CameraEndOffsetY
-	end
 	if args.CrossroadsStart then
 		wait(1.5)
 		PlaySound({ Name = "/Leftovers/World Sounds/MapZoomInShortHigh" })
@@ -314,7 +317,7 @@ function BiomeMapPresentation_wrap( source, args, contextArgs )
 			wait( args.AdditionalFirstTimeWait )
 		end
 
-		PanCamera({ Id = destinationId, OffsetY = cameraEndOffsetY, Duration = cameraDuration, EaseIn = 0, EaseOut = 0.5 })
+		PanCamera({ Id = destinationId, OffsetX = args.CameraEndOffsetX or 0, OffsetY = args.CameraEndOffsetY or 0, Duration = cameraDuration, EaseIn = 0, EaseOut = 0.5 })
 		FocusCamera({ Fraction = 0.85, Duration = cameraDuration, ZoomType = "Ease" })
 		SetAlpha({ Id = endingFogId, Fraction = 0.0, Duration = 1.5 })
 		local currentScale = GetThingDataValue({ Id = endingFogId, Property = "Scale" })
@@ -368,7 +371,7 @@ function BiomeMapPresentation_wrap( source, args, contextArgs )
 
 			wait( 0.65 )
 			CreateAnimation({ Name = "ShoutFlare", DestinationId = args.TargetItemId, Group = "Combat_Menu_TraitTray", Scale = 1.5, OffsetY = 120 })
-			CreateAnimation({ Name = "TraitUpdate", DestinationId = args.TargetItemId, Group = "Combat_Menu_TraitTray", Scale = 2.0 })
+			CreateAnimation({ Name = "BiomeMapActiveBountyTarget", DestinationId = args.TargetItemId, Group = "Combat_Menu_TraitTray", Scale = 1.5 })
 			PlaySound({ Name = "/SFX/Menu Sounds/MirrorFlash2" })
 
 			wait( 0.10 )
