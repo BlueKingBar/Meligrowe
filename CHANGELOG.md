@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Updated mod for 1.0
+
 ## [1.0.3] - 2025-06-20
 
 - Updated mod for The Unseen Update.
