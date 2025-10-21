@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [1.0.5] - 2025-10-21
+
 - Crash fix attempt.
 
 ## [1.0.4] - 2025-10-01
@@ -38,7 +40,8 @@
 
 - First version of the mod!
 
-[unreleased]: https://github.com/BlueKingBar/Meligrowe/compare/1.0.4...HEAD
+[unreleased]: https://github.com/BlueKingBar/Meligrowe/compare/1.0.5...HEAD
+[1.0.5]: https://github.com/BlueKingBar/Meligrowe/compare/1.0.4...1.0.5
 [1.0.4]: https://github.com/BlueKingBar/Meligrowe/compare/1.0.3...1.0.4
 [1.0.3]: https://github.com/BlueKingBar/Meligrowe/compare/1.0.2...1.0.3
 [1.0.2]: https://github.com/BlueKingBar/Meligrowe/compare/1.0.1...1.0.2
