@@ -223,9 +223,11 @@ function GrowTraitUpdate(args)
 		trait.GrowTraitValue = (1 * (400 - currentHP) + finalSize * (currentHP - startHP)) / (400 - startHP)
 		trait.BaseChipmunkValue = (finalPitch * (currentHP - startHP)) / (400 - startHP) --startPitch is zero, therefore startPitch * (400 - currentHP) == 0
 	elseif mode == "room" then
+		if trait.GrowLevel == nil then trait.GrowLevel = 0 end
 		trait.GrowTraitValue = (config.startingSize or 1) + trait.GrowLevel * growthPerRoom
 		trait.BaseChipmunkValue = (config.startingPitch or 0) + trait.GrowLevel * pitchPerRoom
 	else
+		if trait.GrowLevel == nil then trait.GrowLevel = 0 end
 		trait.GrowTraitValue = 1 + trait.GrowLevel * growthPerRoom
 		trait.BaseChipmunkValue = trait.GrowLevel * pitchPerRoom
 	end
@@ -346,7 +348,7 @@ function GrowHero(args)
 		forceInstant = args.forceInstant or false
 	end
 	if CurrentRun.Hero ~= nil then
-		lastScale = CurrentRun.Hero.trackedScale --checks for size changes to affect presentation (grow vs. shrink)
+		lastScale = CurrentRun.Hero.trackedScale or 1 --checks for size changes to affect presentation (grow vs. shrink)
 		if HeroHasTrait("GrowTrait") then
 			local trait = GetHeroTrait("GrowTrait")
 			if trait.GrowLevel ~= nil then
