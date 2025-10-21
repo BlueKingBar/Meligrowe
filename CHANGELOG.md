@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+## [1.0.4] - 2025-10-01
+
+- Updated mod for 1.0
+
 ## [1.0.3] - 2025-06-20
 
 - Updated mod for The Unseen Update.
@@ -32,7 +36,8 @@
 
 - First version of the mod!
 
-[unreleased]: https://github.com/BlueKingBar/Meligrowe/compare/1.0.3...HEAD
+[unreleased]: https://github.com/BlueKingBar/Meligrowe/compare/1.0.4...HEAD
+[1.0.4]: https://github.com/BlueKingBar/Meligrowe/compare/1.0.3...1.0.4
 [1.0.3]: https://github.com/BlueKingBar/Meligrowe/compare/1.0.2...1.0.3
 [1.0.2]: https://github.com/BlueKingBar/Meligrowe/compare/1.0.1...1.0.2
 [1.0.1]: https://github.com/BlueKingBar/Meligrowe/compare/1.0.0...1.0.1
