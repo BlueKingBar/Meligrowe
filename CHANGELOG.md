@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Crash fix attempt.
+
 ## [1.0.4] - 2025-10-01
 
 - Updated mod for 1.0
