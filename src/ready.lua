@@ -142,14 +142,42 @@ modutil.mod.Path.Wrap("FishingPierEndPresentation", function(base, source, args)
 	LoadVoiceBanks({ Name = "MelinoeField" })
 end)
 
---overrides between-act map animation to scale the melinoe figure based on her size
-modutil.mod.Path.Wrap("BiomeMapPresentation", function(base, source, args, contextArgs)
-	BiomeMapPresentation_wrap(source, args, contextArgs)
-end)
-
 --Makes preserving size into run work properly with Max HP scaling. Nabs the final size value a little early.
 modutil.mod.Path.Wrap("RecordRunStats", function(base)
 	base()
 
 	RunEndScale = PreservedScale or 1.0
+end)
+
+--overrides between-act map animation to scale the melinoe figure based on her size
+--uses context override to wrap functions only when called from BiomeMapPresentation
+modutil.mod.Path.Context.Wrap('BiomeMapPresentation', function()
+    modutil.mod.Path.Wrap('SetAnimation', function(base, args)
+        if args.Name == "MelMarkerIdle" then
+			local melId = args.DestinationId
+			if config.scaleMapDoll == true and CurrentRun and CurrentRun.Hero and CurrentRun.Hero.trackedScale then
+				local adjustSize = CurrentRun.Hero.trackedScale
+				SetScale({ Id = melId, Fraction = adjustSize })
+			else
+				-- default Hades II behavior
+				-- adjust scale of Mel based on Circe's spells
+				if HeroHasTrait( "CirceEnlargeTrait" ) then
+					SetScale({ Id = melId, Fraction = 1.70 })
+				elseif HeroHasTrait( "CirceShrinkTrait" ) then
+					SetScale({ Id = melId, Fraction = 0.65 })
+				end
+			end
+        end
+        -- Calling base to actually set the idle animation
+        base(args)
+    end)
+
+    modutil.mod.Path.Wrap('HeroHasTrait', function(base, traitName)
+        if traitName == "CirceEnlargeTrait" or traitName == "CirceShrinkTrait" then
+            -- Do nothing
+        else
+            -- For compatibility, in case any other traits are checked or another mod uses this
+            base(traitName)
+        end
+    end)
 end)

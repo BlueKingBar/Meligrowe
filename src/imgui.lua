@@ -417,7 +417,7 @@ function drawMenu()
 	end
 	rom.ImGui.Spacing() -- End Misc Size Settings
 
-	if rom.ImGui.CollapsingHeader("Binds and Manual Control") then
+	if rom.ImGui.CollapsingHeader("Manual Control") then
 		value, checked = rom.ImGui.Checkbox("Manual Size Control Enabled", config.sizeControl)
 		if checked then
 			if value == false then
@@ -456,10 +456,10 @@ function drawMenu()
 		rom.ImGui.PushStyleColor(rom.ImGuiCol.Text, 0.75, 0.75, 0, 1)
 		rom.ImGui.TextWrapped("* Will change Max HP if Max HP grow mode enabled!")
 		rom.ImGui.PopStyleColor()
+	end
+	rom.ImGui.Spacing() --End Manual Control
 
-		rom.ImGui.Separator()
-
-		rom.ImGui.TextWrapped("Binds for manual control below.")
+	if rom.ImGui.CollapsingHeader("Binds") then
 		rom.ImGui.PushStyleColor(rom.ImGuiCol.Text, 0.75, 0, 0, 1)
 		rom.ImGui.TextWrapped(
 			"* Avoid binding to non-letter keys if possible! If this menu crashes on load, delete your Meligrowe config file in ReturnOfModding\\config."
@@ -554,7 +554,7 @@ function drawMenu()
 
 		rom.ImGui.PopStyleColor(2)
 	end
-	rom.ImGui.Spacing() --End Binds and Manual Control
+	rom.ImGui.Spacing() --End Binds
 
 	if rom.ImGui.CollapsingHeader("Reset Settings to Default") then
 		rom.ImGui.PushStyleColor(rom.ImGuiCol.Text, 0.75, 0, 0, 1)
@@ -568,5 +568,5 @@ function drawMenu()
 			resetSettings()
 		end
 	end
-	rom.ImGui.Spacing() --End Binds and Manual Control
+	rom.ImGui.Spacing() --End Reset Settings to Default
 end --drawMenu
