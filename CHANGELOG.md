@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [1.0.6] - 2025-10-24
+
 - Fixed compatibility issues with mods that affect the map in act transitions. (thanks NikkelM!)
 - Split manual control toggles and binds into separate menus to alleviate performance issues introduced in the final update.
 
@@ -43,7 +45,8 @@
 
 - First version of the mod!
 
-[unreleased]: https://github.com/BlueKingBar/Meligrowe/compare/1.0.5...HEAD
+[unreleased]: https://github.com/BlueKingBar/Meligrowe/compare/1.0.6...HEAD
+[1.0.6]: https://github.com/BlueKingBar/Meligrowe/compare/1.0.5...1.0.6
 [1.0.5]: https://github.com/BlueKingBar/Meligrowe/compare/1.0.4...1.0.5
 [1.0.4]: https://github.com/BlueKingBar/Meligrowe/compare/1.0.3...1.0.4
 [1.0.3]: https://github.com/BlueKingBar/Meligrowe/compare/1.0.2...1.0.3
