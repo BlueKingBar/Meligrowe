@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+- Fixed compatibility issues with mods that affect the map in act transitions. (thanks NikkelM!)
+- Split manual control toggles and binds into separate menus to alleviate performance issues introduced in the final update.
+
 ## [1.0.5] - 2025-10-21
 
 - Crash fix attempt.
