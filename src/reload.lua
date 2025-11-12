@@ -237,20 +237,24 @@ function GrowTraitUpdate(args)
 	end
 
 	if HeroHasTrait("CirceEnlargeTrait") then
-		circeGrowMultiplier = 1.25 and trait.GrowTraitValue > 0 or 0.75
-		chipmunkExtra = -0.2 and trait.GrowTraitValue > 0 or 0.3
+		local circeGrowMultiplier = 1.25
+		if trait.GrowTraitValue < 0 then circeGrowMultiplier = 0.75 end
+		chipmunkExtra = -0.2
+		if trait.GrowTraitValue < 0 then chipmunkExtra = 0.3 end
+
 		trait.GrowTraitValue = trait.GrowTraitValue * circeGrowMultiplier
 		if mode == "room" then
 			growthPerRoomDisplay = growthPerRoom * circeGrowMultiplier
 		end
-		trait.BaseChipmunkValue = trait.BaseChipmunkValue - 0.2
+		trait.BaseChipmunkValue = trait.BaseChipmunkValue + chipmunkExtra
 	end
 
 	if HeroHasTrait("CirceShrinkTrait") then
-		circeGrowMultiplier = 0.75 and trait.GrowTraitValue > 0 or 1.25
-		chipmunkExtra = 0.3 and trait.GrowTraitValue > 0 or -0.2
+		local circeGrowMultiplier = 0.75
+		if trait.GrowTraitValue < 0 then circeGrowMultiplier = 1.25 end
+		chipmunkExtra = 0.3
+		if trait.GrowTraitValue < 0 then chipmunkExtra = -0.2 end
 
-		trait.GrowTraitValue = trait.GrowTraitValue * circeGrowMultiplier
 		trait.GrowTraitValue = trait.GrowTraitValue * circeGrowMultiplier
 		if mode == "room" then
 			growthPerRoomDisplay = growthPerRoom * circeGrowMultiplier
