@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [1.0.7] - 2025-11-12
+
 - Fixed crash with Circe size change boons.
 
 ## [1.0.6] - 2025-10-24
@@ -47,7 +49,8 @@
 
 - First version of the mod!
 
-[unreleased]: https://github.com/BlueKingBar/Meligrowe/compare/1.0.6...HEAD
+[unreleased]: https://github.com/BlueKingBar/Meligrowe/compare/1.0.7...HEAD
+[1.0.7]: https://github.com/BlueKingBar/Meligrowe/compare/1.0.6...1.0.7
 [1.0.6]: https://github.com/BlueKingBar/Meligrowe/compare/1.0.5...1.0.6
 [1.0.5]: https://github.com/BlueKingBar/Meligrowe/compare/1.0.4...1.0.5
 [1.0.4]: https://github.com/BlueKingBar/Meligrowe/compare/1.0.3...1.0.4
