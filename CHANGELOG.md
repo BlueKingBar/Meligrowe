@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Fixed crash with Circe size change boons.
+
 ## [1.0.6] - 2025-10-24
 
 - Fixed compatibility issues with mods that affect the map in act transitions. (thanks NikkelM!)
